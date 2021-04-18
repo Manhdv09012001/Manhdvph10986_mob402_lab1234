@@ -171,7 +171,7 @@ app.get('/delete/:id', async (req,res)=>{
                 res.status(404).send('No item found');
             }
             else{
-                res.redirect('/list')
+                res.redirect('/l_user')
             }
         }
         catch (err){
