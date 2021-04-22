@@ -36,8 +36,8 @@ var user = new mongoose.Schema({
     pet :String,
 })
  //
-app.listen(process.env.PORT);
-// console.log(`http://localhost:${7000}`);
+app.listen(process.env.PORT || 7000);
+console.log(`http://localhost:${7000}`);
 app.use(express.static('css_new'));
 
 app.engine('.handlebars', expressHBS());
@@ -127,8 +127,26 @@ function updateUsers(req,res){
 //get all data user
 app.get('/l_user', (req, res)=>{
     var userModel = db.model('user_names', user);
-        userModel.find({})
-            .then(userlist => {
+    var baseJson = {
+        errorCode : undefined,
+        errorMessage : undefined,
+        data : undefined,
+    }
+        userModel.find({},
+            function (error, user_names) {
+                if(error){
+                    baseJson.errorCode = 404;
+                    baseJson.errorMessage = error;
+                }else {
+                    baseJson.errorCode =200
+                    baseJson.errorMessage = 'OK';
+                    baseJson.data = user_names;
+                }
+                res.send(baseJson);
+
+                res.send(user);
+            }
+            ).then(userlist => {
             res.render('listUser',{
                 ups:userlist.map(user=>user.toJSON())
             });
@@ -178,48 +196,36 @@ app.get('/delete/:id', async (req,res)=>{
             res.status(500).send(err);
         }
 
-    // try{
-    //     var userModel = db.model('user_names', user);
-    //     const users = userModel.findByIdAndDelete(req.params.id, req.body);
-    //     if(!users)res.status(404).send('No item found');
-    //     res.status(200).send();
-    // }catch (error){
-    //     res.status(500).send(error);
-    // }
 })
-//delete
-// app.delete('/delete/:id', async (req, res) =>{
-//     try{
-//         var userModel = db.model('user_names', user);
-//         const users = await userModel.findByIdAndDelete(req.params.id, req.body);
-//         userModel.findByIdAndDelete(req.params.id, req.body);
-//         if(!users) res.status(404).send('No item found');
-//         res.status(200).send();
-//     }catch (error){
-//         res.status(500).send(error);
-//     }
-// })
-// {
-//     "name": "lab",
-//     "version": "1.0.0",
-//     "description": "Tinder cua Manh",
-//     "main": "index.js",
-//     "dependencies": {
-//     "body-parser": "^1.19.0",
-//         "express": "^4.17.1",
-//         "express-handlebars": "^5.3.0",
-//         "mogoose": "0.0.1-security",
-//         "mongoose": "^5.12.4"
-// },
-//     "devDependencies": {
-//     "multer": "^1.4.2"
-// },
-//     "scripts": {
-//     "start": "node index.js"
-// },
-//     "author": "Doan Manh",
-//     "license": "ISC"
-// }
+
+
+//get data len react
+app.get('/getUsers', function (req, res){
+    var connectUsers = db.model('user_names', user);
+    var baseJson = {
+        errorCode : undefined,
+        errorMessage : undefined,
+        data : undefined,
+    }
+    connectUsers.find({},
+        function (error, user_names) {
+            if(error){
+                baseJson.errorCode = 404;
+                baseJson.errorMessage = error;
+            }else {
+                baseJson.errorCode =200
+                baseJson.errorMessage = 'OK';
+                baseJson.data = user_names;
+            }
+            res.send(baseJson);
+
+            // res.send(user);
+        })
+})
+
+
+
+
 
 
 
